@@ -1,0 +1,258 @@
+Raouter 0- switch 0
+
+no
+enable
+config t
+interface fa0/0
+ip addres 5.1.1.254 255.0.0.0
+no shut
+do wr
+exit
+
+
+
+***config/ config t
+
+Raouter 5- switch 5
+
+no
+enable
+config t
+interface fa0/0
+ip address 192.168.60.254 255.255.255.0
+no shut
+do wr
+exit
+
+
+
+
+Raouter 1- switch 1 (192.168.20.0)
+
+no
+enable
+config t
+interface fa0/0
+ip addres 192.168.20.254 255.255.255.0
+no shut
+do wr
+exit
+
+Raouter1 - switch1  (192.168.30.0)
+
+no
+enable
+config t
+interface fa0/0
+ip addres 192.168.30.254 255.255.255.0
+no shut
+do wr
+exit
+
+
+Raouter 3- switch 3
+
+no
+enable
+config t
+interface fa0/0
+ip address 192.168.40.254 255.255.255.0
+no shut
+do wr
+exit
+
+Raouter 4- switch 4
+
+no
+enable
+config t
+interface fa0/0
+ip address 192.168.50.254 255.255.255.0
+no shut
+do wr
+exit
+
+
+
+
+
+
+
+
+
+###########*****Router vs Router
+
+router 5 to router 0
+interface se2/0
+clock rate 64000
+ip address 10.1.1.1 255.0.0.0
+no shut
+do wr
+exit
+
+
+
+router 0 to router 5
+interface se2/0
+ip address 10.1.1.2 255.0.0.0
+no shut
+do wr
+exit
+
+
+router 5 to network 5.0.0.0 & network 10.0.0.0
+enable
+show ip route
+config t
+ip route 5.0.0.0 255.0.0.0 10.1.1.2
+ip route 10.0.0.0 255.0.0.0 10.1.1.2
+
+router 0 to network 192.168.60.0 & network 10.0.0.0
+enable
+show ip route
+config t
+ip route 192.168.60.0 255.255.255.0 10.1.1.1
+ip route 10.0.0.0 255.0.0.0 10.1.1.1
+
+show ip route
+
+
+C    5.0.0.0/8 is directly connected, FastEthernet0/0
+C    10.0.0.0/8 is directly connected, Serial2/0
+S    192.168.60.0/24 [1/0] via 10.1.1.1
+
+
+
+
+##R0 to R1
+
+
+interface se3/0
+clock rate 64000
+ip address 20.0.0.1 255.0.0.0
+ip route 192.168.20.0 255.255.255.0 20.0.0.2
+ip route 20.0.0.0 255.0.0.0 20.0.0.2
+no shut
+do wr
+exit
+
+##R1 to R0
+
+interface se2/0
+
+ip address 20.1.1.2 255.0.0.0
+ip route 5.0.0.0 255.0.0.0 20.0.0.1
+ip route 20.0.0.0 255.0.0.0 20.0.0.1
+no shut
+do wr
+exit
+
+
+Roter 1 to r5
+ip route 1923 255.0.0.0 20.0.0.1
+ip route 20.0.0.0 255.0.0.0 20.0.0.1
+
+
+
+
+Router 3 to router 2,4,1
+
+interface se2/0
+ip address 140.0.0.1 255.255.0.0
+interface se3/0
+ip address 150.0.0.2 255.255.0.0
+interface se6/0
+ip address 160.0.0.2 255.255.0.0
+no shut
+do wr
+exit
+
+ip route 5.0.0.0 255.0.0.0 20.0.0.1
+ip route 20.0.0.0 255.0.0.0 20.0.0.1
+no shut
+do wr
+exit
+
+
+
+
+*************** OSPF ***********
+**********************************
+####################################
+
+##ospf router 0
+config 
+router ospf 1
+network 5.0.0.0 0.255.255.255 area 1
+network 10.0.0.0 0.255.255.255 area 1
+network 20.0.0.0 0.255.255.255 area 1
+network 160.0.0.0 0.0.255.255 area 1
+network 210.0.0.0 0.0.0.255 area 1
+network 212.0.0.0 0.0.0.255 area 1
+
+
+##ospf router 1
+config 
+router ospf 2
+network 192.168.20.0 0.0.0.255 area 1
+network 40.0.0.0 0.255.255.255 area 1
+network 20.0.0.0 0.255.255.255 area 1
+network 30.0.0.0 0.255.255.255 area 1 
+network 218.0.0.0 0.0.0.255 area 1 
+network 220.0.0.0 0.0.0.255 area 1 
+
+##ospf router 5
+config 
+router ospf 5
+network 192.168.60.0 0.0.0.255 area 1
+network 40.0.0.0 0.255.255.255 area 1
+network 10.0.0.0 0.255.255.255 area 1
+network 200.0.0.0 0.0.0.255 area 1 
+network 214.0.0.0 0.0.0.255 area 1  
+network 216.0.0.0 0.0.0.255 area 1  
+           
+
+
+
+
+##ospf router
+config 
+router ospf 3
+network 140.0.0.0 0.0.255.255 area 1
+network 150.0.0.0 0.0.255.255 area 1
+network 160.0.0.0 0.0.255.255 area 1
+network 192.168.40.0 0.0.0.255 area 1
+network 216.0.0.0 0.0.0.255 area 1
+network 216.0.0.0 0.0.0.255 area 1
+network 2.0.0.0 0.0.0.255 area 1
+
+
+
+
+
+router ospf 6
+network 140.0.0.0 0.0.255.255 area 1
+network 192.168.30.0 0.0.0.255 area 1
+network 30.0.0.0 0.255.255.255 area 1
+network 212.0.0.0 0.0.0.255 area 1
+network 214.0.0.0 0.0.0.255 area 1
+network 221.0.0.0 0.0.0.255 area 1
+
+
+
+##Router 4 Ospf
+router ospf 4
+network 150.0.0.0 0.0.255.255 area 1
+network 200.0.0.0 0.0.0.255 area 1
+network 210.0.0.0 0.0.0.255 area 1
+network 221.0.0.0 0.0.0.255 area 1
+network 218.0.0.0 0.0.0.255 area 1
+network 192.168.50.0 0.0.0.255 area 1
+
+
+
+
+
+
+
+
